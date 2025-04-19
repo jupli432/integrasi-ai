@@ -1,60 +1,52 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
+1.penambahan file di :
+. folder controller :
+- CvController.php
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+2. Penambahan file di dalam folder models:
+Company.php
+JobMo.php
+JobSkill.php
+MajorSubject.php
+ProfileCv2.php
+ProfileEducation.php
+ProfileExperience.php
+ProfileSkill.php
+User.php
 
-## About Laravel
+3. menambahkan baris coding berikut didalam file :routes ->front-routes -> site_user.php :
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as:
+use App\Http\Controllers\CvController;
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Route::get('aianalyze', 'UserController@aianalyze')->name('aianalyze');
+Route::post('/analyze-cv', [CvController::class, 'analyzeCv'])->name('cv.analyze');
 
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications.
+4. menambahkan baris coding berikut didalam file : routes ->front-routes -> company.php :
+Route::group(['middleware' => ['company', 'company.package.active']], function() {
+    Route::get('/resume-search', [CompanyController::class, 'resume_search_packages'])->name('company.resume.search');
+    Route::post('/ai-search', [CompanyController::class, 'aiSearch'])->name('ai.search');
+});
 
-## Learning Laravel
+5. Menambahkan coding file didalam folder resources -> views -> user :
+analyze.blade.php
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of any modern web application framework, making it a breeze to get started learning the framework.
+6. menambahkan coding didalam file (views-> includes : user_dashboard_menu.blade
 
-If you're not in the mood to read, [Laracasts](https://laracasts.com) contains over 1100 video tutorials on a range of topics including Laravel, modern PHP, unit testing, JavaScript, and more. Boost the skill level of yourself and your entire team by digging into our comprehensive video library.
+7. menambahkan fungsi search analyze di dalam folder (resources-> views -> company_resume_search_packages.blade.php
 
-## Laravel Sponsors
+8. menambahkan coding didalam folder views -> includes :
+user_dashboard_menu.blade.php
+ <li class="{{ Request::url() == route('aianalyze') ? 'active' : '' }}"><a href="{{ route('aianalyze') }}"><i class="fas fa-spell-check" aria-hidden="true"></i> {{__('Resume Analyze')}}</a>
+        </li>
+9. Penambahan coding didalan folder controllers -> UserController.php :
+public function aianalyze()
+{
+    $user = User::findOrFail(Auth::user()->id);
+    return view('user.analyze')->with('user', $user);
+}
 
-We would like to extend our thanks to the following sponsors for helping fund on-going Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell):
+10. Penambahan folder App -> Services berikut 2 filenya : CvAnalysisService.php dan GeminiService.php
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
+11. Penambahan variable : 'company.package.active' => \App\Http\Middleware\CheckCompanyPackage::class, di dalam file kernel.php
 
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+12. Penambahan file : CheckCompanyPackage.php didalam folder http -> middleware
+13. penambahan file: ai_results.blade di folder : resources -> view ->company -> partials
